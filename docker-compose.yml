@@ -13,6 +13,7 @@ services:
       - 8082:8081 
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - MongoDB__ConnectionURI=mongodb://mongodb:27017/
     logging:
       driver: "json-file"
       options:
