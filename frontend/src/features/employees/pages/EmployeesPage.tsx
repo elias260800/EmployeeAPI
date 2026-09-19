@@ -3,6 +3,8 @@ import { employeeApi } from "../api/employeeApi";
 import type { Employee, EmployeeFilterParams } from "../types/employee.types";
 import { EmployeeTable } from "../components/EmployeeTable";
 import { EmployeeFilters } from "../components/EmployeeFilters";
+import { useReportPolling } from "../../reports/hooks/useReportPolling";
+import { ReportModal } from "../../reports/components/ReportModal";
 
 interface EmployeesPageProps {
   onLogout?: () => void;
@@ -13,6 +15,26 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = ({ onLogout }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<EmployeeFilterParams>({});
+
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const {
+    status: reportStatus,
+    report,
+    errorMsg: reportError,
+    attempts: reportAttempts,
+    startGeneration,
+    cancel: cancelReport,
+  } = useReportPolling();
+
+  const handleOpenReport = () => {
+    setIsReportModalOpen(true);
+    startGeneration();
+  };
+
+  const handleCloseReport = () => {
+    setIsReportModalOpen(false);
+    cancelReport();
+  };
 
   const fetchEmployees = useCallback(
     async (filterParams: EmployeeFilterParams) => {
@@ -58,19 +80,32 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = ({ onLogout }) => {
         }}
       >
         <h2 style={{ margin: 0 }}>Listado de Empleados</h2>
-        {onLogout && (
+        <div style={{ display: "flex", gap: "8px" }}>
           <button
             type="button"
-            onClick={onLogout}
+            onClick={handleOpenReport}
             style={{
               padding: "6px 12px",
               cursor: "pointer",
               borderRadius: "4px",
             }}
           >
-            Cerrar sesión
+            Generar reporte
           </button>
-        )}
+          {onLogout && (
+            <button
+              type="button"
+              onClick={onLogout}
+              style={{
+                padding: "6px 12px",
+                cursor: "pointer",
+                borderRadius: "4px",
+              }}
+            >
+              Cerrar sesión
+            </button>
+          )}
+        </div>
       </div>
 
       <EmployeeFilters
@@ -83,6 +118,16 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = ({ onLogout }) => {
         isLoading={isLoading}
         error={error}
         onRetry={() => fetchEmployees(filters)}
+      />
+
+      <ReportModal
+        isOpen={isReportModalOpen}
+        onClose={handleCloseReport}
+        status={reportStatus}
+        report={report}
+        errorMsg={reportError}
+        attempts={reportAttempts}
+        onRetry={startGeneration}
       />
     </div>
   );
