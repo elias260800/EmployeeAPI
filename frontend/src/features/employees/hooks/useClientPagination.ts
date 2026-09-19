@@ -15,7 +15,7 @@ export function useClientPagination<T>(
 
   const totalItems = items.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
-  const safePage = Math.min(currentPage, totalPages);
+  const safePage = Math.max(1, Math.min(currentPage, totalPages));
 
   const paginatedItems = useMemo(() => {
     const start = (safePage - 1) * pageSize;
@@ -33,7 +33,10 @@ export function useClientPagination<T>(
     totalPages,
     startItem,
     endItem,
-    setPage: setCurrentPage,
+    setPage: (newPage: number) => {
+      const clamped = Math.max(1, Math.min(newPage, totalPages));
+      setCurrentPage(clamped);
+    },
     setPageSize: (newSize: number) => {
       setPageSize(newSize);
       setCurrentPage(1);
