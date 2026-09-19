@@ -100,14 +100,14 @@ export const EmployeeFilters: React.FC<EmployeeFiltersProps> = ({
         gap: "12px",
         alignItems: "flex-end",
         padding: "12px",
-        background: "#f8fafc",
-        border: "1px solid #e2e8f0",
+        background: "var(--code-bg)",
+        border: "1px solid var(--border)",
         borderRadius: "8px",
         marginBottom: "16px",
       }}
     >
       <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-        <label style={{ fontSize: "12px", color: "#475569" }}>
+        <label style={{ fontSize: "12px", color: "var(--text)" }}>
           Departamento:
         </label>
         <select
@@ -118,7 +118,9 @@ export const EmployeeFilters: React.FC<EmployeeFiltersProps> = ({
             padding: "6px 10px",
             fontSize: "13px",
             borderRadius: "4px",
-            border: "1px solid #cbd5e1",
+            border: "1px solid var(--border)",
+            background: "var(--bg)",
+            color: "var(--text-h)",
             minWidth: "180px",
           }}
         >
@@ -132,7 +134,7 @@ export const EmployeeFilters: React.FC<EmployeeFiltersProps> = ({
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-        <label style={{ fontSize: "12px", color: "#475569" }}>Cargo:</label>
+        <label style={{ fontSize: "12px", color: "var(--text)" }}>Cargo:</label>
         <select
           value={selectedPosName}
           onChange={handlePositionChange}
@@ -141,7 +143,9 @@ export const EmployeeFilters: React.FC<EmployeeFiltersProps> = ({
             padding: "6px 10px",
             fontSize: "13px",
             borderRadius: "4px",
-            border: "1px solid #cbd5e1",
+            border: "1px solid var(--border)",
+            background: "var(--bg)",
+            color: "var(--text-h)",
             minWidth: "180px",
           }}
         >
@@ -169,8 +173,9 @@ export const EmployeeFilters: React.FC<EmployeeFiltersProps> = ({
             padding: "6px 12px",
             fontSize: "13px",
             borderRadius: "4px",
-            border: "1px solid #cbd5e1",
-            background: "#fff",
+            border: "1px solid var(--border)",
+            background: "var(--bg)",
+            color: "var(--text-h)",
             cursor: "pointer",
           }}
         >

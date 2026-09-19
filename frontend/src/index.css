@@ -11,6 +11,13 @@
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
+  --error-text: #b91c1c;
+  --error-bg: #fef2f2;
+  --error-border: #fecaca;
+  --success-text: #166534;
+  --success-bg: #f0fdf4;
+  --success-border: #bbf7d0;
+
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
@@ -43,6 +50,13 @@
     --social-bg: rgba(47, 48, 58, 0.5);
     --shadow:
       rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+
+    --error-text: #f87171;
+    --error-bg: rgba(239, 68, 68, 0.15);
+    --error-border: rgba(239, 68, 68, 0.4);
+    --success-text: #4ade80;
+    --success-bg: rgba(34, 197, 94, 0.15);
+    --success-border: rgba(34, 197, 94, 0.4);
   }
 
   #social .button-icon {
@@ -108,4 +122,60 @@ code {
   line-height: 135%;
   padding: 4px 8px;
   background: var(--code-bg);
+}
+
+button {
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text-h);
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+button:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+input,
+select {
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text-h);
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+input:focus,
+select:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+select option {
+  background-color: var(--code-bg);
+  color: var(--text-h);
+}
+
+table {
+  color: var(--text);
+  border-collapse: collapse;
+}
+
+th {
+  color: var(--text-h);
+}
+
+tbody tr:hover {
+  background-color: var(--accent-bg);
 }

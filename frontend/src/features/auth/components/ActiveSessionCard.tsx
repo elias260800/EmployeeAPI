@@ -14,10 +14,10 @@ export const ActiveSessionCard: React.FC<ActiveSessionCardProps> = ({
     <div
       style={{
         padding: "14px",
-        background: "#f0fdf4",
-        border: "1px solid #bbf7d0",
+        background: "var(--success-bg)",
+        border: "1px solid var(--success-border)",
         borderRadius: "8px",
-        color: "#166534",
+        color: "var(--success-text)",
       }}
     >
       <p style={{ margin: "0 0 6px 0", fontWeight: "bold" }}>

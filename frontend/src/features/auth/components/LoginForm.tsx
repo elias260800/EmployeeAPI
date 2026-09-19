@@ -26,9 +26,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         <div
           style={{
             marginBottom: "12px",
-            color: "#b91c1c",
-            background: "#fef2f2",
-            border: "1px solid #fecaca",
+            color: "var(--error-text)",
+            background: "var(--error-bg)",
+            border: "1px solid var(--error-border)",
             padding: "8px",
             borderRadius: "6px",
             fontSize: "13px",
@@ -48,6 +48,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
               display: "block",
               fontSize: "12px",
               marginBottom: "4px",
+              color: "var(--text)",
             }}
           >
             Usuario:
@@ -72,6 +73,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
               display: "block",
               fontSize: "12px",
               marginBottom: "4px",
+              color: "var(--text)",
             }}
           >
             Contraseña:
