@@ -6,14 +6,12 @@ export interface LoginRequest {
 export interface LoginResponse {
   username: string;
   token: string;
-  expiresAt?: string;
   expiresAtUtc?: string;
 }
 
 export interface UserSession {
   username: string;
   token: string;
-  expiresAt?: string;
   expiresAtUtc?: string;
 }
 

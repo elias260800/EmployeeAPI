@@ -21,9 +21,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [session, setSession] = useState<UserSession | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const isTokenExpired = (expiresAt?: string): boolean => {
-    if (!expiresAt) return false;
-    const expiresDate = new Date(expiresAt);
+  const isTokenExpired = (expiresAtUtc?: string): boolean => {
+    if (!expiresAtUtc) return false;
+    const expiresDate = new Date(expiresAtUtc);
     return isNaN(expiresDate.getTime()) || expiresDate.getTime() <= Date.now();
   };
 
@@ -37,7 +37,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const stored = sessionStorage.getItem(TOKEN_STORAGE_KEY);
       if (stored) {
         const parsedSession: UserSession = JSON.parse(stored);
-        const expDate = parsedSession?.expiresAtUtc || parsedSession?.expiresAt;
+        const expDate = parsedSession?.expiresAtUtc;
         if (parsedSession?.token && !isTokenExpired(expDate)) {
           // eslint-disable-next-line react-hooks/set-state-in-effect
           setSession(parsedSession);
@@ -69,7 +69,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       username: data.username,
       token: data.token,
       expiresAtUtc: data.expiresAtUtc,
-      expiresAt: data.expiresAtUtc || data.expiresAt,
     };
 
     sessionStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify(newSession));

@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { employeeApi } from "../api/employeeApi";
-import type { Employee } from "../types/employee.types";
+import type { Employee, EmployeeFilterParams } from "../types/employee.types";
 import { EmployeeTable } from "../components/EmployeeTable";
+import { EmployeeFilters } from "../components/EmployeeFilters";
 
 interface EmployeesPageProps {
   onLogout?: () => void;
@@ -11,25 +12,33 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = ({ onLogout }) => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [filters, setFilters] = useState<EmployeeFilterParams>({});
 
-  const fetchEmployees = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
+  const fetchEmployees = useCallback(
+    async (filterParams: EmployeeFilterParams) => {
+      setIsLoading(true);
+      setError(null);
 
-    try {
-      const data = await employeeApi.getEmployees();
-      setEmployees(data);
-    } catch {
-      setError("No se pudieron cargar los empleados");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+      try {
+        const data = await employeeApi.getEmployees(filterParams);
+        setEmployees(data);
+      } catch {
+        setError("No se pudieron cargar los empleados");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchEmployees();
-  }, [fetchEmployees]);
+    fetchEmployees(filters);
+  }, [fetchEmployees, filters]);
+
+  const handleFilterChange = (newFilters: EmployeeFilterParams) => {
+    setFilters(newFilters);
+  };
 
   return (
     <div
@@ -64,11 +73,16 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = ({ onLogout }) => {
         )}
       </div>
 
+      <EmployeeFilters
+        onFilterChange={handleFilterChange}
+        disabled={isLoading}
+      />
+
       <EmployeeTable
         employees={employees}
         isLoading={isLoading}
         error={error}
-        onRetry={fetchEmployees}
+        onRetry={() => fetchEmployees(filters)}
       />
     </div>
   );
