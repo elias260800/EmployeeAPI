@@ -1,27 +1,62 @@
 # EmployeeAPI
 
-API con CRUD de Empleados y Login, requiere autenticación para poder acceder a los endpoints.
-El usuario y contraseña para acceder a la API es: admin/admin
+API con CRUD de Empleados y Login, requiere autenticaciï¿½n para poder acceder a los endpoints.
+El usuario y contraseï¿½a para acceder a la API es: admin/admin
 {
-    "username": "admin",
-    "password": "admin"
+"username": "admin",
+"password": "admin"
 }
 
 ## Requisitos
 
 - [Dotnet SDK 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
-- [MongoDB](https://www.mongodb.com/try/download/community) 
+- [MongoDB](https://www.mongodb.com/try/download/community)
 
-## Configuración del Proyecto
+## Configuraciï¿½n del Proyecto
 
 1. Clona este repositorio
 2. Instalar el SDK de Dotnet 8
 3. Instalar MongoDB
 4. Tener una instancia de MongoDB corriendo en el puerto 27017 (mongodb://localhost:27017/)
-    a. En caso de no tener una instancia de MongoDB corriendo en el puerto 27017, puedes cambiar la cadena de conexión en el archivo appsettings.json
-5. En la carpeta raíz del proyecto ejecuta el comando `dotnet restore`
-6. En la carpeta raíz del proyecto ejecuta el comando `dotnet run`
+   a. En caso de no tener una instancia de MongoDB corriendo en el puerto 27017, puedes cambiar la cadena de conexiï¿½n en el archivo appsettings.json
+5. En la carpeta raï¿½z del proyecto ejecuta el comando `dotnet restore`
+6. En la carpeta raï¿½z del proyecto ejecuta el comando `dotnet run`
 
-## Documentación de la API
-Se puede visualizar la documentación al ejecutar el proyecto en la siguiente url:
+## Documentaciï¿½n de la API
+
+Se puede visualizar la documentaciï¿½n al ejecutar el proyecto en la siguiente url:
 <url>/swagger/index.html
+
+---
+
+## ConfiguraciÃ³n del Frontend (React + TypeScript + Vite)
+
+El cliente Front-End se encuentra en la carpeta [`frontend/`](./frontend).
+
+### Pasos para iniciar el Frontend:
+
+1. Acceder al directorio:
+   ```bash
+   cd frontend
+   ```
+2. Instalar dependencias:
+   ```bash
+   npm install
+   ```
+3. Ejecutar en modo desarrollo:
+   ```bash
+   npm run dev
+   ```
+   La aplicaciÃ³n abrirÃ¡ en `http://localhost:5173` y conectarÃ¡ automÃ¡ticamente con el backend en `http://localhost:8080` a travÃ©s de su proxy Vite.
+
+### EjecuciÃ³n de Pruebas Automatizadas (Vitest):
+
+```bash
+npm run test
+```
+
+---
+
+## DocumentaciÃ³n del DesafÃ­o
+
+Para consultar el detalle tÃ©cnico completo consulte el documento principal: **[`frontend/README.md`](./frontend/README.md)**.
