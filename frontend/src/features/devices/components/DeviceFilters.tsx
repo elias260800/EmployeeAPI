@@ -1,5 +1,15 @@
 import React from "react";
 import type { DeviceFilterParams } from "../types/device.types";
+import {
+  Paper,
+  Box,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Button,
+} from "@mui/material";
 
 interface DeviceFiltersProps {
   filters: DeviceFilterParams;
@@ -21,113 +31,80 @@ export const DeviceFilters: React.FC<DeviceFiltersProps> = ({
   const hasActiveFilters = Boolean(filters.search || filters.location);
 
   return (
-    <div
-      style={{
+    <Paper
+      elevation={1}
+      sx={{
+        p: 2,
+        mb: 2,
         display: "flex",
         flexWrap: "wrap",
-        gap: "12px",
-        alignItems: "flex-end",
+        gap: 2,
+        alignItems: "center",
         justifyContent: "space-between",
-        padding: "12px",
-        background: "var(--code-bg)",
-        border: "1px solid var(--border)",
-        borderRadius: "8px",
-        marginBottom: "16px",
       }}
     >
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", alignItems: "flex-end" }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-          <label style={{ fontSize: "12px", color: "var(--text)" }}>
-            Buscar dispositivo:
-          </label>
-          <input
-            type="text"
-            placeholder="Filtrar por nombre o ubicación..."
-            value={filters.search || ""}
-            onChange={(e) =>
-              onFilterChange({ ...filters, search: e.target.value })
-            }
-            disabled={disabled}
-            style={{
-              padding: "6px 10px",
-              fontSize: "13px",
-              borderRadius: "4px",
-              border: "1px solid var(--border)",
-              background: "var(--bg)",
-              color: "var(--text-h)",
-              minWidth: "220px",
-            }}
-          />
-        </div>
+      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, alignItems: "center" }}>
+        <TextField
+
+          size="small"
+          label="Buscar dispositivo"
+          placeholder="Nombre o ubicación..."
+          value={filters.search || ""}
+          onChange={(e) =>
+            onFilterChange({ ...filters, search: e.target.value })
+          }
+          disabled={disabled}
+          sx={{ minWidth: 220 }}
+        />
 
         {availableLocations.length > 0 && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-            <label style={{ fontSize: "12px", color: "var(--text)" }}>
-              Ubicación:
-            </label>
-            <select
+          <FormControl size="small" sx={{ minWidth: 200 }}>
+            <InputLabel id="location-filter-label">Ubicación</InputLabel>
+            <Select
+              labelId="location-filter-label"
+              label="Ubicación"
               value={filters.location || ""}
               onChange={(e) =>
                 onFilterChange({ ...filters, location: e.target.value })
               }
               disabled={disabled}
-              style={{
-                padding: "6px 10px",
-                fontSize: "13px",
-                borderRadius: "4px",
-                border: "1px solid var(--border)",
-                background: "var(--bg)",
-                color: "var(--text-h)",
-                minWidth: "180px",
-              }}
             >
-              <option value="">Todas las ubicaciones</option>
+              <MenuItem value="">
+                <em>Todas las ubicaciones</em>
+              </MenuItem>
               {availableLocations.map((loc) => (
-                <option key={loc} value={loc}>
+                <MenuItem key={loc} value={loc}>
                   {loc}
-                </option>
+                </MenuItem>
               ))}
-            </select>
-          </div>
+            </Select>
+          </FormControl>
         )}
 
         {hasActiveFilters && (
-          <button
-            type="button"
+          <Button
+            variant="text"
+            color="secondary"
+            size="small"
             onClick={onReset}
             disabled={disabled}
-            style={{
-              padding: "6px 12px",
-              fontSize: "13px",
-              borderRadius: "4px",
-              border: "1px solid var(--border)",
-              background: "var(--bg)",
-              color: "var(--text-h)",
-              cursor: "pointer",
-            }}
+            sx={{ textTransform: "none" }}
           >
             Limpiar filtros
-          </button>
+          </Button>
         )}
-      </div>
+      </Box>
 
-      <button
-        type="button"
+      <Button
+        variant="contained"
+        color="primary"
+        size="medium"
         onClick={onOpenCreate}
         disabled={disabled}
-        style={{
-          padding: "6px 14px",
-          fontSize: "13px",
-          fontWeight: 600,
-          borderRadius: "4px",
-          border: "none",
-          background: "var(--accent)",
-          color: "#fff",
-          cursor: "pointer",
-        }}
+        sx={{ textTransform: "none", fontWeight: 600 }}
       >
         + Nuevo Dispositivo
-      </button>
-    </div>
+      </Button>
+    </Paper>
   );
 };

@@ -8,6 +8,33 @@ import type {
 import { DeviceTable } from "../components/DeviceTable";
 import { DeviceFilters } from "../components/DeviceFilters";
 import { CreateDeviceModal } from "../components/CreateDeviceModal";
+import { Box, Typography, Button, Alert, Snackbar } from "@mui/material";
+
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+
+const muiDarkTheme = createTheme({
+  palette: {
+    mode: "dark",
+    primary: {
+      main: "#c084fc",
+    },
+    background: {
+      default: "#16171d",
+      paper: "#1f2028",
+    },
+    text: {
+      primary: "#f3f4f6",
+      secondary: "#9ca3af",
+    },
+    divider: "#2e303a",
+    action: {
+      hover: "rgba(192, 132, 252, 0.08)",
+    },
+  },
+  typography: {
+    fontFamily: "inherit",
+  },
+});
 
 export const DevicesPage: React.FC = () => {
   const [devices, setDevices] = useState<Device[]>([]);
@@ -39,14 +66,7 @@ export const DevicesPage: React.FC = () => {
     fetchDevices();
   }, [fetchDevices]);
 
-  // Limpiar mensaje de feedback después de unos segundos
-  useEffect(() => {
-    if (!feedback) return;
-    const timer = setTimeout(() => setFeedback(null), 4000);
-    return () => clearTimeout(timer);
-  }, [feedback]);
-
-  // Lista de ubicaciones únicas para el selector del filtro
+  // Lista de ubicaciones para el selector del filtro
   const availableLocations = useMemo(() => {
     const locSet = new Set<string>();
     devices.forEach((d) => {
@@ -55,7 +75,7 @@ export const DevicesPage: React.FC = () => {
     return Array.from(locSet).sort();
   }, [devices]);
 
-  // Filtrado local en cliente (estrategia 4.a)
+  // Filtrado local en cliente (4.a)
   const filteredDevices = useMemo(() => {
     return devices.filter((device) => {
       if (filters.search) {
@@ -131,99 +151,98 @@ export const DevicesPage: React.FC = () => {
   };
 
   return (
-    <div
-      style={{
-        width: "100%",
-        maxWidth: "920px",
-        margin: "0 auto",
-        padding: "16px",
-        textAlign: "left",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-          marginBottom: "16px",
-          gap: "12px",
-          flexWrap: "wrap",
+    <ThemeProvider theme={muiDarkTheme}>
+      <Box
+        sx={{
+          width: "100%",
+          maxWidth: 920,
+          mx: "auto",
+          p: 2,
+          textAlign: "left",
         }}
       >
-        <div>
-          <h2 style={{ margin: "0 0 4px 0" }}>Dispositivos / Terminales</h2>
-        </div>
-
-        <div style={{ display: "flex", gap: "8px" }}>
-          <button
-            type="button"
-            onClick={fetchDevices}
-            disabled={isLoading}
-            style={{
-              padding: "6px 12px",
-              fontSize: "13px",
-              cursor: isLoading ? "not-allowed" : "pointer",
-            }}
-          >
-            ↻ Actualizar
-          </button>
-        </div>
-      </div>
-
-      {feedback && (
-        <div
-          style={{
-            padding: "10px 14px",
-            marginBottom: "16px",
-            borderRadius: "6px",
-            fontSize: "13px",
-            fontWeight: 500,
-            background:
-              feedback.type === "success"
-                ? "var(--success-bg)"
-                : "var(--error-bg)",
-            color:
-              feedback.type === "success"
-                ? "var(--success-text)"
-                : "var(--error-text)",
-            border: `1px solid ${
-              feedback.type === "success"
-                ? "var(--success-border)"
-                : "var(--error-border)"
-            }`,
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            mb: 2,
+            gap: 1.5,
+            flexWrap: "wrap",
           }}
         >
-          {feedback.text}
-        </div>
-      )}
+          <Box>
+            <Typography
+              variant="h5"
+              component="h2"
+              gutterBottom
+              sx={{ fontWeight: 600 }}
+            >
+              Dispositivos / Terminales
+            </Typography>
 
-      {devices.length > 0 && (
-        <DeviceFilters
-          filters={filters}
-          onFilterChange={setFilters}
-          onReset={() => setFilters({})}
+            <Typography variant="body2" color="text.secondary">
+              Gestión de Dispositivos / Terminales
+            </Typography>
+          </Box>
+
+          <Button
+            variant="outlined"
+            color="inherit"
+            size="small"
+            onClick={fetchDevices}
+            disabled={isLoading}
+            sx={{ textTransform: "none" }}
+          >
+            Actualizar
+          </Button>
+        </Box>
+
+        {feedback && (
+          <Alert
+            severity={feedback.type}
+            onClose={() => setFeedback(null)}
+            sx={{ mb: 2 }}
+          >
+            {feedback.text}
+          </Alert>
+        )}
+
+        {devices.length > 0 && (
+          <DeviceFilters
+            filters={filters}
+            onFilterChange={setFilters}
+            onReset={() => setFilters({})}
+            onOpenCreate={() => setIsCreateModalOpen(true)}
+            availableLocations={availableLocations}
+            disabled={isLoading}
+          />
+        )}
+
+        <DeviceTable
+          devices={filteredDevices}
+          isLoading={isLoading}
+          error={error}
+          onRetry={fetchDevices}
           onOpenCreate={() => setIsCreateModalOpen(true)}
-          availableLocations={availableLocations}
-          disabled={isLoading}
+          onSeedDemo={handleSeedDemo}
+          onDelete={handleDeleteDevice}
+          isSeeding={isSeeding}
         />
-      )}
 
-      <DeviceTable
-        devices={filteredDevices}
-        isLoading={isLoading}
-        error={error}
-        onRetry={fetchDevices}
-        onOpenCreate={() => setIsCreateModalOpen(true)}
-        onSeedDemo={handleSeedDemo}
-        onDelete={handleDeleteDevice}
-        isSeeding={isSeeding}
-      />
+        <CreateDeviceModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          onSubmit={handleCreateDevice}
+        />
 
-      <CreateDeviceModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSubmit={handleCreateDevice}
-      />
-    </div>
+        <Snackbar
+          open={Boolean(feedback)}
+          autoHideDuration={4000}
+          onClose={() => setFeedback(null)}
+          message={feedback?.text}
+        />
+      </Box>
+    </ThemeProvider>
   );
 };

@@ -91,7 +91,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({
               padding: "4px 8px",
             }}
           >
-            ✕
+            x
           </button>
         </div>
 

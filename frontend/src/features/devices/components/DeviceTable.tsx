@@ -1,7 +1,25 @@
 import React from "react";
 import type { Device } from "../types/device.types";
 import { useClientPagination } from "../../employees/hooks/useClientPagination";
-import { PaginationControls } from "../../employees/components/PaginationControls";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  TablePagination,
+  Box,
+  Typography,
+  Button,
+  Alert,
+  AlertTitle,
+  CircularProgress,
+  Chip,
+  Card,
+  CardContent,
+} from "@mui/material";
 
 interface DeviceTableProps {
   devices: Device[];
@@ -29,246 +47,193 @@ export const DeviceTable: React.FC<DeviceTableProps> = ({
     currentPage,
     pageSize,
     totalItems,
-    totalPages,
-    startItem,
-    endItem,
     setPage,
     setPageSize,
   } = useClientPagination(devices);
 
   if (isLoading) {
     return (
-      <div
-        style={{
-          padding: "36px 16px",
-          textAlign: "center",
-          color: "var(--text)",
-        }}
-      >
-        <div
-          style={{
-            width: "32px",
-            height: "32px",
-            margin: "0 auto 12px",
-            border: "3px solid var(--border)",
-            borderTopColor: "var(--accent)",
-            borderRadius: "50%",
-            animation: "spin 1s linear infinite",
+      <Paper elevation={1} sx={{ p: 4, textAlign: "center", my: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 1.5,
           }}
-        />
-        <style>
-          {`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}
-        </style>
-        <p style={{ margin: 0, fontWeight: 500, color: "var(--text-h)" }}>
-          Cargando dispositivos...
-        </p>
-        <p
-          style={{ margin: "4px 0 0", fontSize: "12px", color: "var(--text)" }}
         >
-          Consultando...
-        </p>
-      </div>
+          <CircularProgress size={36} color="primary" />
+
+          <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+            Cargando dispositivos...
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            Consultando...
+          </Typography>
+        </Box>
+      </Paper>
     );
   }
 
   if (error) {
     return (
-      <div
-        style={{
-          padding: "16px",
-          color: "var(--error-text)",
-          background: "var(--error-bg)",
-          border: "1px solid var(--error-border)",
-          borderRadius: "8px",
-          textAlign: "center",
-          margin: "16px 0",
-        }}
+      <Alert
+        severity="error"
+        sx={{ my: 2 }}
+        action={
+          onRetry && (
+            <Button
+              color="error"
+              size="small"
+              variant="outlined"
+              onClick={onRetry}
+            >
+              Reintentar conexión
+            </Button>
+          )
+        }
       >
-        <p style={{ margin: "0 0 8px 0", fontWeight: 600 }}>
-          Error al cargar dispositivos
-        </p>
-        <p style={{ margin: "0 0 12px 0", fontSize: "13px" }}>{error}</p>
-        {onRetry && (
-          <button
-            type="button"
-            onClick={onRetry}
-            style={{
-              padding: "6px 14px",
-              cursor: "pointer",
-              borderRadius: "4px",
-              background: "var(--bg)",
-              border: "1px solid var(--error-border)",
-              color: "var(--error-text)",
-              fontWeight: 500,
-            }}
-          >
-            Reintentar conexión
-          </button>
-        )}
-      </div>
+        <AlertTitle>Error al cargar dispositivos</AlertTitle>
+        {error}
+      </Alert>
     );
   }
 
   if (devices.length === 0) {
     return (
-      <div
-        style={{
-          padding: "32px 20px",
+      <Card
+        variant="outlined"
+        sx={{
+          my: 2,
           textAlign: "center",
-          background: "var(--code-bg)",
-          border: "1px dashed var(--border)",
-          borderRadius: "8px",
-          margin: "16px 0",
+          p: 3,
+          borderStyle: "dashed",
+          bgcolor: "action.hover",
         }}
       >
-        <div style={{ fontSize: "28px", marginBottom: "8px" }}>📟</div>
-        <h4
-          style={{
-            margin: "0 0 8px 0",
-            fontSize: "16px",
-            color: "var(--text-h)",
-            fontWeight: 600,
-          }}
-        >
-          No hay dispositivos registrados en la base de datos
-        </h4>
-        <p
-          style={{
-            margin: "0 auto 16px auto",
-            maxWidth: "520px",
-            fontSize: "13px",
-            color: "var(--text)",
-            lineHeight: 1.5,
-          }}
-        >
-          La colección inicia vacía. Es necesario registrar dispositivos
-          manualmente o poblarla con datos de prueba.
-        </p>
+        <CardContent sx={{ pb: 1 }}>
+          <Typography variant="h3" sx={{ mb: 1 }}>
+            📟
+          </Typography>
+          <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+            No hay dispositivos registrados en la base de datos
+          </Typography>
 
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            gap: "10px",
-            flexWrap: "wrap",
-          }}
-        >
-          {onOpenCreate && (
-            <button
-              type="button"
-              onClick={onOpenCreate}
-              style={{
-                padding: "8px 16px",
-                borderRadius: "4px",
-                cursor: "pointer",
-                background: "var(--accent)",
-                color: "#fff",
-                border: "none",
-                fontWeight: 600,
-              }}
-            >
-              + Registrar dispositivo
-            </button>
-          )}
-
-          {onSeedDemo && (
-            <button
-              type="button"
-              onClick={onSeedDemo}
-              disabled={isSeeding}
-              style={{
-                padding: "8px 16px",
-                borderRadius: "4px",
-                cursor: isSeeding ? "not-allowed" : "pointer",
-                background: "var(--bg)",
-                color: "var(--text-h)",
-                border: "1px solid var(--border)",
-                fontWeight: 500,
-              }}
-            >
-              {isSeeding ? "Poblando..." : "⚡ Cargar dispositivos demo"}
-            </button>
-          )}
-        </div>
-      </div>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ maxWidth: 540, mx: "auto", mb: 3 }}
+          >
+            La colección inicia vacía. Es necesario registrar dispositivos
+            manualmente o poblarla con datos de prueba.
+          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              gap: 2,
+              flexWrap: "wrap",
+            }}
+          >
+            {onOpenCreate && (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={onOpenCreate}
+                sx={{ textTransform: "none", fontWeight: 600 }}
+              >
+                + Registrar dispositivo
+              </Button>
+            )}
+            {onSeedDemo && (
+              <Button
+                variant="outlined"
+                color="inherit"
+                disabled={isSeeding}
+                onClick={onSeedDemo}
+                sx={{ textTransform: "none" }}
+              >
+                {isSeeding ? "Poblando..." : "⚡ Cargar dispositivos demo"}
+              </Button>
+            )}
+          </Box>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div style={{ width: "100%", marginTop: "16px" }}>
-      <div style={{ width: "100%", overflowX: "auto" }}>
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            textAlign: "left",
-            fontSize: "14px",
-          }}
-        >
-          <thead>
-            <tr style={{ borderBottom: "2px solid var(--border)" }}>
-              <th style={{ padding: "10px" }}>Nombre del Dispositivo</th>
-              <th style={{ padding: "10px" }}>Ubicación</th>
-              <th style={{ padding: "10px" }}>Zona Horaria (IANA)</th>
-              <th style={{ padding: "10px", textAlign: "right" }}>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
+    <Paper elevation={1} sx={{ width: "100%", overflow: "hidden", mt: 2 }}>
+      <TableContainer sx={{ maxHeight: 540 }}>
+        <Table stickyHeader aria-label="tabla de dispositivos MUI" size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell sx={{ fontWeight: 600 }}>
+                Nombre del Dispositivo
+              </TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Ubicación</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>
+                Zona Horaria (IANA)
+              </TableCell>
+              <TableCell align="right" sx={{ fontWeight: 600 }}>
+                Acciones
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
             {paginatedItems.map((device) => (
-              <tr
-                key={device.id}
-                style={{ borderBottom: "1px solid var(--border)" }}
-              >
-                <td
-                  style={{
-                    padding: "10px",
-                    fontWeight: 500,
-                    color: "var(--text-h)",
-                  }}
-                >
+              <TableRow hover key={device.id}>
+                <TableCell component="th" scope="row" sx={{ fontWeight: 500 }}>
                   {device.name}
-                </td>
-                <td style={{ padding: "10px" }}>{device.location}</td>
-                <td style={{ padding: "10px" }}>
-                  <code style={{ fontSize: "12px" }}>{device.timezone}</code>
-                </td>
-                <td style={{ padding: "10px", textAlign: "right" }}>
+                </TableCell>
+                <TableCell>{device.location}</TableCell>
+                <TableCell>
+                  <Chip
+                    label={device.timezone}
+                    size="small"
+                    variant="outlined"
+                    sx={{ fontFamily: "monospace", fontSize: "0.75rem" }}
+                  />
+                </TableCell>
+                <TableCell align="right">
                   {onDelete && (
-                    <button
-                      type="button"
+                    <Button
+                      variant="contained"
+                      color="error"
+                      size="small"
                       onClick={() => onDelete(device.id, device.name)}
-                      title="Eliminar dispositivo"
-                      style={{
-                        padding: "4px 8px",
-                        fontSize: "12px",
-                        cursor: "pointer",
-                        borderRadius: "4px",
-                        color: "var(--error-text)",
-                        background: "var(--error-bg)",
-                        border: "1px solid var(--error-border)",
+                      sx={{
+                        textTransform: "none",
+                        py: 0.25,
+                        px: 1,
+                        fontSize: "0.75rem",
                       }}
                     >
                       Eliminar
-                    </button>
+                    </Button>
                   )}
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
-      </div>
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-      <PaginationControls
-        currentPage={currentPage}
-        totalPages={totalPages}
-        pageSize={pageSize}
-        totalItems={totalItems}
-        startItem={startItem}
-        endItem={endItem}
-        onPageChange={setPage}
-        onPageSizeChange={setPageSize}
-        itemLabel="dispositivos"
+      <TablePagination
+        rowsPerPageOptions={[10, 20, 50, 100]}
+        component="div"
+        count={totalItems}
+        rowsPerPage={pageSize}
+        page={currentPage - 1}
+        onPageChange={(_, newPage) => setPage(newPage + 1)}
+        onRowsPerPageChange={(event) =>
+          setPageSize(parseInt(event.target.value, 10))
+        }
+        labelRowsPerPage="Filas por página:"
+        labelDisplayedRows={({ from, to, count }) =>
+          `Mostrando ${from} - ${to} de ${count !== -1 ? count : `más de ${to}`} dispositivos`
+        }
       />
-    </div>
+    </Paper>
   );
 };
