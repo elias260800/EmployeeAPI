@@ -18,7 +18,11 @@ export interface Position {
   departmentId: string;
 }
 
+export type EmployeeFilterMode = "local" | "server";
+
 export interface EmployeeFilterParams {
   departmentName?: string;
   positionName?: string;
+  search?: string;
 }
+

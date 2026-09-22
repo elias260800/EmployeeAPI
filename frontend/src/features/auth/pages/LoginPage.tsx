@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import { authApi } from "../api/authApi";
 import { TOKEN_STORAGE_KEY } from "../../../api/client";
 import type { LoginRequest, LoginResponse } from "../types/auth.types";
@@ -8,11 +9,21 @@ import { LoginForm } from "../components/LoginForm";
 
 interface LoginPageProps {
   onSuccess?: (session: LoginResponse) => void;
+  isExpired?: boolean;
 }
 
-export const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
+export const LoginPage: React.FC<LoginPageProps> = ({
+  onSuccess,
+  isExpired = false,
+}) => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [dismissedExpired, setDismissedExpired] = useState(false);
+  const showExpiredWarning =
+    !dismissedExpired &&
+    (isExpired ||
+      (typeof window !== "undefined" &&
+        window.location.search.includes("expired=1")));
 
   const [session, setSession] = useState<LoginResponse | null>(() => {
     try {
@@ -25,6 +36,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
 
   const handleLogin = async (credentials: LoginRequest) => {
     setErrorMsg(null);
+    setDismissedExpired(true);
     setIsSubmitting(true);
 
     try {
@@ -49,17 +61,36 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
   const handleLogout = () => {
     sessionStorage.removeItem(TOKEN_STORAGE_KEY);
     setSession(null);
+    setDismissedExpired(false);
   };
 
   return (
     <div
       style={{
-        maxWidth: "320px",
+        maxWidth: "360px",
         width: "100%",
         margin: "0 auto",
         textAlign: "left",
       }}
     >
+      {showExpiredWarning && (
+        <div
+          style={{
+            padding: "10px 14px",
+            backgroundColor: "rgba(245, 158, 11, 0.12)",
+            border: "1px solid rgba(245, 158, 11, 0.4)",
+            borderRadius: "6px",
+            color: "#b45309",
+            marginBottom: "16px",
+            fontSize: "13px",
+            lineHeight: 1.4,
+          }}
+        >
+          <strong>Sesión cerrada:</strong> Tu sesión ha expirado o el token ha
+          vencido. Por favor, ingresa tus credenciales nuevamente.
+        </div>
+      )}
+
       {session ? (
         <ActiveSessionCard session={session} onLogout={handleLogout} />
       ) : (

@@ -10,6 +10,7 @@ interface PaginationControlsProps {
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
   disabled?: boolean;
+  itemLabel?: string;
 }
 
 export const PaginationControls: React.FC<PaginationControlsProps> = ({
@@ -22,6 +23,7 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
   onPageChange,
   onPageSizeChange,
   disabled,
+  itemLabel = "empleados",
 }) => {
   if (totalItems === 0) return null;
 
@@ -43,8 +45,9 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
       <div>
         Mostrando <strong style={{ color: "var(--text-h)" }}>{startItem}</strong> -{" "}
         <strong style={{ color: "var(--text-h)" }}>{endItem}</strong> de{" "}
-        <strong style={{ color: "var(--text-h)" }}>{totalItems}</strong> empleados
+        <strong style={{ color: "var(--text-h)" }}>{totalItems}</strong> {itemLabel}
       </div>
+
 
       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
