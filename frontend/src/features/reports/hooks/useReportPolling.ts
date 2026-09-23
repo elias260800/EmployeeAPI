@@ -63,20 +63,21 @@ export function useReportPolling(
     clearTimer();
     abortInFlight();
     if (isMountedRef.current) {
-      setStatus(ReportUIStatus.Idle);
+      setStatus(ReportUIStatus.Cancelled);
       setErrorMsg(null);
     }
   }, [clearTimer, abortInFlight]);
 
   const reset = useCallback(() => {
-    cancel();
+    clearTimer();
+    abortInFlight();
     if (isMountedRef.current) {
       setReport(null);
       setAttempts(0);
       setStatus(ReportUIStatus.Idle);
       setErrorMsg(null);
     }
-  }, [cancel]);
+  }, [clearTimer, abortInFlight]);
 
   const pollStatus = useCallback(
     async (executionId: string, currentAttempt: number) => {

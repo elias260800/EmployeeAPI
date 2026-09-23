@@ -40,6 +40,7 @@ export const ReportUIStatus = {
   Completed: "completed",
   Error: "error",
   Timeout: "timeout",
+  Cancelled: "cancelled",
 } as const;
 
 export type ReportUIStatus =

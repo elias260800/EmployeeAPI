@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ReportUIStatus, type ReportJob } from "../types/report.types";
 
 interface ReportModalProps {
@@ -20,6 +20,19 @@ export const ReportModal: React.FC<ReportModalProps> = ({
   attempts,
   onRetry,
 }) => {
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const isProcessing =
@@ -122,9 +135,85 @@ export const ReportModal: React.FC<ReportModalProps> = ({
                 ? "Iniciando generación del reporte..."
                 : "Procesando datos en el servidor..."}
             </p>
-            <p style={{ fontSize: "13px", color: "var(--text)", margin: 0 }}>
+            <p style={{ fontSize: "13px", color: "var(--text)", margin: "0 0 16px 0" }}>
               Intento {attempts} • Consultando cada 2s
             </p>
+            <button
+              type="button"
+              onClick={onClose}
+              style={{
+                padding: "6px 14px",
+                backgroundColor: "var(--bg)",
+                border: "1px solid var(--border)",
+                color: "var(--text)",
+                borderRadius: "4px",
+                cursor: "pointer",
+                fontSize: "13px",
+              }}
+            >
+              Cancelar operación
+            </button>
+          </div>
+        )}
+
+        {status === ReportUIStatus.Cancelled && (
+          <div>
+            <div
+              style={{
+                padding: "12px",
+                backgroundColor: "var(--code-bg)",
+                border: "1px solid var(--accent-border)",
+                borderRadius: "6px",
+                color: "var(--text-h)",
+                marginBottom: "16px",
+                fontSize: "13px",
+              }}
+            >
+              <p style={{ margin: "0 0 4px 0", fontWeight: 600 }}>
+                Operación cancelada
+              </p>
+              <p style={{ margin: 0, color: "var(--text)" }}>
+                La generación del reporte fue cancelada.
+              </p>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: "8px",
+              }}
+            >
+              <button
+                type="button"
+                onClick={onClose}
+                style={{
+                  padding: "6px 12px",
+                  backgroundColor: "var(--bg)",
+                  border: "1px solid var(--border)",
+                  color: "var(--text-h)",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                }}
+              >
+                Cerrar
+              </button>
+              <button
+                type="button"
+                onClick={onRetry}
+                style={{
+                  padding: "6px 12px",
+                  backgroundColor: "var(--code-bg)",
+                  border: "1px solid var(--accent)",
+                  color: "var(--text-h)",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  fontWeight: 500,
+                }}
+              >
+                Reintentar
+              </button>
+            </div>
           </div>
         )}
 

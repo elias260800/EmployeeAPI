@@ -9,6 +9,7 @@ import { EmployeeTable } from "../components/EmployeeTable";
 import { EmployeeFilters } from "../components/EmployeeFilters";
 import { useReportPolling } from "../../reports/hooks/useReportPolling";
 import { ReportModal } from "../../reports/components/ReportModal";
+import { ReportUIStatus } from "../../reports/types/report.types";
 
 interface EmployeesPageProps {
   onLogout?: () => void;
@@ -28,6 +29,9 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = () => {
   const [filters, setFilters] = useState<EmployeeFilterParams>({});
 
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [reportCancelMessage, setReportCancelMessage] = useState<string | null>(
+    null,
+  );
   const {
     status: reportStatus,
     report,
@@ -37,14 +41,53 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = () => {
     cancel: cancelReport,
   } = useReportPolling();
 
+  useEffect(() => {
+    if (!reportCancelMessage) return;
+
+    const timer = setTimeout(() => {
+      setReportCancelMessage(null);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [reportCancelMessage]);
+
+  useEffect(() => {
+    const isProcessing =
+      reportStatus === ReportUIStatus.Generating ||
+      reportStatus === ReportUIStatus.Polling;
+
+    if (!isProcessing) return;
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [reportStatus]);
+
   const handleOpenReport = () => {
+    setReportCancelMessage(null);
     setIsReportModalOpen(true);
     startGeneration();
   };
 
   const handleCloseReport = () => {
+    const wasProcessing =
+      reportStatus === ReportUIStatus.Generating ||
+      reportStatus === ReportUIStatus.Polling;
+
     setIsReportModalOpen(false);
     cancelReport();
+
+    if (wasProcessing) {
+      setReportCancelMessage(
+        "Operación cancelada: Se ha cancelado la generación del reporte de empleados.",
+      );
+    }
   };
 
   // Carga inicial completa sin paginación
@@ -203,6 +246,48 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = () => {
           </button>
         </div>
       </div>
+
+      {reportCancelMessage && (
+        <div
+          role="status"
+          aria-live="polite"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "12px",
+            padding: "12px 16px",
+            marginBottom: "16px",
+            backgroundColor: "var(--code-bg)",
+            border: "1px solid var(--accent-border)",
+            borderRadius: "6px",
+            color: "var(--text-h)",
+            fontSize: "14px",
+            boxShadow: "var(--shadow)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <span style={{ fontSize: "16px" }}>⚠️</span>
+            <span>{reportCancelMessage}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setReportCancelMessage(null)}
+            aria-label="Cerrar mensaje de cancelación"
+            style={{
+              background: "transparent",
+              border: "none",
+              cursor: "pointer",
+              color: "var(--text)",
+              fontSize: "16px",
+              padding: "2px 6px",
+              lineHeight: 1,
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       <EmployeeFilters
         filters={filters}
