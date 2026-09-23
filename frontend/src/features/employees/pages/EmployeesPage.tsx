@@ -18,7 +18,7 @@ interface EmployeesPageProps {
 const DEFAULT_FILTER_MODE: EmployeeFilterMode =
   (import.meta.env.VITE_EMPLOYEE_FILTER_MODE as EmployeeFilterMode) || "local";
 
-export const EmployeesPage: React.FC<EmployeesPageProps> = ({ onLogout }) => {
+export const EmployeesPage: React.FC<EmployeesPageProps> = () => {
   const [filterMode, setFilterMode] =
     useState<EmployeeFilterMode>(DEFAULT_FILTER_MODE);
   const [allEmployees, setAllEmployees] = useState<Employee[]>([]);
@@ -47,7 +47,7 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = ({ onLogout }) => {
     cancelReport();
   };
 
-  // Carga inicial completa sin parámetros de paginación
+  // Carga inicial completa sin paginación
   const fetchAllEmployees = useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -61,7 +61,7 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = ({ onLogout }) => {
     }
   }, []);
 
-  // Carga con filtros enviados directamente al endpoint del servidor
+  // Carga con filtros enviados al endpoint del servidor
   const fetchServerEmployees = useCallback(
     async (params: EmployeeFilterParams) => {
       setIsLoading(true);
@@ -201,19 +201,6 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = ({ onLogout }) => {
           >
             📊 Generar reporte
           </button>
-          {onLogout && (
-            <button
-              type="button"
-              onClick={onLogout}
-              style={{
-                padding: "6px 12px",
-                cursor: "pointer",
-                borderRadius: "4px",
-              }}
-            >
-              Cerrar sesión
-            </button>
-          )}
         </div>
       </div>
 

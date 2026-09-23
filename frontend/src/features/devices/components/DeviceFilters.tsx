@@ -16,6 +16,8 @@ interface DeviceFiltersProps {
   onFilterChange: (filters: DeviceFilterParams) => void;
   onReset: () => void;
   onOpenCreate: () => void;
+  onDeleteAll?: () => void;
+  isDeletingAll?: boolean;
   availableLocations: string[];
   disabled?: boolean;
 }
@@ -25,6 +27,8 @@ export const DeviceFilters: React.FC<DeviceFiltersProps> = ({
   onFilterChange,
   onReset,
   onOpenCreate,
+  onDeleteAll,
+  isDeletingAll = false,
   availableLocations,
   disabled = false,
 }) => {
@@ -43,9 +47,10 @@ export const DeviceFilters: React.FC<DeviceFiltersProps> = ({
         justifyContent: "space-between",
       }}
     >
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, alignItems: "center" }}>
+      <Box
+        sx={{ display: "flex", flexWrap: "wrap", gap: 2, alignItems: "center" }}
+      >
         <TextField
-
           size="small"
           label="Buscar dispositivo"
           placeholder="Nombre o ubicación..."
@@ -95,16 +100,38 @@ export const DeviceFilters: React.FC<DeviceFiltersProps> = ({
         )}
       </Box>
 
-      <Button
-        variant="contained"
-        color="primary"
-        size="medium"
-        onClick={onOpenCreate}
-        disabled={disabled}
-        sx={{ textTransform: "none", fontWeight: 600 }}
+      <Box
+        sx={{
+          display: "flex",
+          gap: 1.5,
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
       >
-        + Nuevo Dispositivo
-      </Button>
+        {onDeleteAll && (
+          <Button
+            variant="outlined"
+            color="error"
+            size="medium"
+            onClick={onDeleteAll}
+            disabled={disabled || isDeletingAll}
+            sx={{ textTransform: "none", fontWeight: 600 }}
+          >
+            {isDeletingAll ? "Eliminando registros..." : "Eliminar todos"}
+          </Button>
+        )}
+
+        <Button
+          variant="contained"
+          color="primary"
+          size="medium"
+          onClick={onOpenCreate}
+          disabled={disabled || isDeletingAll}
+          sx={{ textTransform: "none", fontWeight: 600 }}
+        >
+          + Nuevo Dispositivo
+        </Button>
+      </Box>
     </Paper>
   );
 };

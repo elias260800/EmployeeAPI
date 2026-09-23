@@ -6,9 +6,19 @@ import type {
   DeviceFilterParams,
 } from "../types/device.types";
 import { DeviceTable } from "../components/DeviceTable";
+import { DeviceInfiniteScroll } from "../components/DeviceInfiniteScroll";
 import { DeviceFilters } from "../components/DeviceFilters";
 import { CreateDeviceModal } from "../components/CreateDeviceModal";
-import { Box, Typography, Button, Alert, Snackbar } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button,
+  Alert,
+  Snackbar,
+  ToggleButtonGroup,
+  ToggleButton,
+} from "@mui/material";
+import { Table, Infinity as InfinityIcon } from "lucide-react";
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
@@ -47,6 +57,8 @@ export const DevicesPage: React.FC = () => {
     type: "success" | "error";
     text: string;
   } | null>(null);
+  const [viewFormat, setViewFormat] = useState<"table" | "infinite">("table");
+  const [isDeletingAll, setIsDeletingAll] = useState(false);
 
   const fetchDevices = useCallback(async () => {
     setIsLoading(true);
@@ -131,14 +143,43 @@ export const DevicesPage: React.FC = () => {
     }
   };
 
+  const handleDeleteAllDevices = async () => {
+    const count = devices.length;
+    if (count === 0) return;
+
+    const confirmDelete = window.confirm(
+      `¿Estás seguro de que deseas eliminar TODOS los ${count} dispositivos? Esta acción no se puede deshacer.`,
+    );
+    if (!confirmDelete) return;
+
+    setIsDeletingAll(true);
+    try {
+      const ids = devices.map((d) => d.id);
+      await deviceApi.deleteAllDevices(ids);
+      setDevices([]);
+      setFeedback({
+        type: "success",
+        text: `Se eliminaron los ${count} dispositivos exitosamente.`,
+      });
+    } catch {
+      setFeedback({
+        type: "error",
+        text: "Ocurrió un error al intentar eliminar todos los dispositivos.",
+      });
+      fetchDevices();
+    } finally {
+      setIsDeletingAll(false);
+    }
+  };
+
   const handleSeedDemo = async () => {
     setIsSeeding(true);
     try {
-      const created = await deviceApi.seedDemoDevices();
+      const created = await deviceApi.seedDemoDevices(200);
       await fetchDevices();
       setFeedback({
         type: "success",
-        text: `Se importaron ${created.length} terminales de demostración exitosamente.`,
+        text: `Se importaron ${created.length} datos de demostración exitosamente.`,
       });
     } catch {
       setFeedback({
@@ -165,7 +206,7 @@ export const DevicesPage: React.FC = () => {
           sx={{
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "flex-start",
+            alignItems: "center",
             mb: 2,
             gap: 1.5,
             flexWrap: "wrap",
@@ -176,7 +217,7 @@ export const DevicesPage: React.FC = () => {
               variant="h5"
               component="h2"
               gutterBottom
-              sx={{ fontWeight: 600 }}
+              sx={{ fontWeight: 600, mb: 0.5 }}
             >
               Dispositivos / Terminales
             </Typography>
@@ -186,16 +227,65 @@ export const DevicesPage: React.FC = () => {
             </Typography>
           </Box>
 
-          <Button
-            variant="outlined"
-            color="inherit"
-            size="small"
-            onClick={fetchDevices}
-            disabled={isLoading}
-            sx={{ textTransform: "none" }}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
+              flexWrap: "wrap",
+            }}
           >
-            Actualizar
-          </Button>
+            <ToggleButtonGroup
+              value={viewFormat}
+              exclusive
+              onChange={(_, nextFormat) => {
+                if (nextFormat) setViewFormat(nextFormat);
+              }}
+              size="small"
+              aria-label="Formato de visualización"
+              sx={{
+                bgcolor: "background.paper",
+                border: 1,
+                borderColor: "divider",
+                "& .MuiToggleButton-root": {
+                  textTransform: "none",
+                  px: 1.5,
+                  py: 0.5,
+                  fontSize: "0.8125rem",
+                  fontWeight: 500,
+                  color: "text.secondary",
+                  "&.Mui-selected": {
+                    color: "primary.main",
+                    bgcolor: "action.hover",
+                    fontWeight: 600,
+                  },
+                },
+              }}
+            >
+              <ToggleButton value="table" aria-label="Formato de tabla">
+                <Table size={16} style={{ marginRight: 6 }} />
+                Tabla
+              </ToggleButton>
+              <ToggleButton
+                value="infinite"
+                aria-label="Formato de scroll infinito"
+              >
+                <InfinityIcon size={16} style={{ marginRight: 6 }} />
+                Scroll Infinito
+              </ToggleButton>
+            </ToggleButtonGroup>
+
+            <Button
+              variant="outlined"
+              color="inherit"
+              size="small"
+              onClick={fetchDevices}
+              disabled={isLoading || isDeletingAll}
+              sx={{ textTransform: "none" }}
+            >
+              Actualizar
+            </Button>
+          </Box>
         </Box>
 
         {feedback && (
@@ -214,21 +304,36 @@ export const DevicesPage: React.FC = () => {
             onFilterChange={setFilters}
             onReset={() => setFilters({})}
             onOpenCreate={() => setIsCreateModalOpen(true)}
+            onDeleteAll={handleDeleteAllDevices}
+            isDeletingAll={isDeletingAll}
             availableLocations={availableLocations}
-            disabled={isLoading}
+            disabled={isLoading || isDeletingAll}
           />
         )}
 
-        <DeviceTable
-          devices={filteredDevices}
-          isLoading={isLoading}
-          error={error}
-          onRetry={fetchDevices}
-          onOpenCreate={() => setIsCreateModalOpen(true)}
-          onSeedDemo={handleSeedDemo}
-          onDelete={handleDeleteDevice}
-          isSeeding={isSeeding}
-        />
+        {viewFormat === "table" ? (
+          <DeviceTable
+            devices={filteredDevices}
+            isLoading={isLoading}
+            error={error}
+            onRetry={fetchDevices}
+            onOpenCreate={() => setIsCreateModalOpen(true)}
+            onSeedDemo={handleSeedDemo}
+            onDelete={handleDeleteDevice}
+            isSeeding={isSeeding}
+          />
+        ) : (
+          <DeviceInfiniteScroll
+            devices={filteredDevices}
+            isLoading={isLoading}
+            error={error}
+            onRetry={fetchDevices}
+            onOpenCreate={() => setIsCreateModalOpen(true)}
+            onSeedDemo={handleSeedDemo}
+            onDelete={handleDeleteDevice}
+            isSeeding={isSeeding}
+          />
+        )}
 
         <CreateDeviceModal
           isOpen={isCreateModalOpen}
