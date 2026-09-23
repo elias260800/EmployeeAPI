@@ -33,12 +33,26 @@ function App() {
   const handleLoginSuccess = () => {
     setIsAuthenticated(true);
     setIsExpiredSession(false);
+    if (
+      typeof window !== "undefined" &&
+      (window.location.search.includes("expired=1") ||
+        window.location.pathname.startsWith("/login"))
+    ) {
+      window.history.replaceState(null, "", "/");
+    }
   };
 
   const handleLogout = () => {
     sessionStorage.removeItem(TOKEN_STORAGE_KEY);
     setIsAuthenticated(false);
     setIsExpiredSession(false);
+    if (
+      typeof window !== "undefined" &&
+      (window.location.search.includes("expired=1") ||
+        window.location.pathname.startsWith("/login"))
+    ) {
+      window.history.replaceState(null, "", "/");
+    }
   };
 
   const currentUsername = (() => {

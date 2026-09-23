@@ -162,3 +162,37 @@ Consideraciones extra:
     refetchIntervalInBackground: false,
   });
   ```
+
+---
+
+## 5. Librerías Utilizadas
+
+- React 19 + TypeScript: Asegura un código robusto con tipado estricto.
+
+- Vite 8: Entorno de desarrollo rápido y evita problemas de CORS.
+
+- Axios: Centraliza las llamadas HTTP, inyectando automáticamente el token de autenticación y gestionando sesiones expiradas (errores 401).
+
+- Material UI: Aporta componentes visuales listos, accesibles y con soporte de modo oscuro para la pantalla de gestión de dispositivos.
+
+- Lucide React: Proporciona iconos ligeros y nítidos que hacen la interfaz más intuitiva sin sobrecargar la aplicación (usado para scroll).
+
+- Vitest + Testing Library: Permite ejecutar pruebas automatizadas rápidas para validar componentes, interacciones del usuario y llamadas asíncronas.
+
+---
+
+## 6. Supuestos y Decisiones de Diseño
+
+1. **Credenciales de Acceso:**  
+   El formulario de inicio de sesión viene precompletado con las credenciales indicadas (`admin` / `admin`), permitiendo iniciar sesión con un solo clic o modificar los valores libremente.
+2. **Mecanismo Dual de Filtrado de Empleados:**
+   - Se implementó **Filtrado Local en Memoria** como opción predeterminada.
+   - Se añadió un **Modo Servidor**, permitiendo demostrar tanto la manipulación en memoria como el consumo de los query params del endpoint de la API.
+3. **Resiliencia y Ciclo de Vida del Polling:**
+   - Se estableció un intervalo inicial de **2 segundos** y un límite máximo de **25 intentos** (~50 segundos) para considerar un job como no responsivo (`Timeout`).
+   - Se incorporó una **Cancelación Manual**: el usuario puede cerrar el modal o hacer clic en "Cancelar operación". Lo mismo ocurre al cerrar la ventana.
+4. **Manejo de Expiración de Token:**  
+   Al detectarse un `401` en una petición autenticada, se elimina el token en `sessionStorage`y se muestra un banner informativo indicando que la sesión ha vencido.
+5. **Doble Implementación Práctica de la Sección 4.a:**
+   - En **Empleados** se implementó **Paginación en Cliente** (`useClientPagination`).
+   - En **Dispositivos** se implementó **Infinite Scroll** (`useClientInfiniteScroll`), pudiendo comparar en vivo ambos comportamientos.
